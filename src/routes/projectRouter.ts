@@ -43,8 +43,7 @@ router.delete("/:projectId", auth.protect, async (req, res, next) => {
 
     const data = await prisma.project.delete({
       where: {
-        id: projectId,
-        userId_id: userId,
+        userId_id: { userId: userId, id: projectId },
       },
     });
     res.json({ status: "success", msg: data });

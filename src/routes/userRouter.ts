@@ -68,7 +68,7 @@ userRouter.post("/login", async (req, res, next) => {
       user.password
     );
 
-    if (!user || isValidUser) {
+    if (!user || !isValidUser) {
       throw new Error("Email or password is not correct");
     }
 
@@ -81,7 +81,7 @@ userRouter.post("/login", async (req, res, next) => {
 
     res.json({ status: "success", token, data: user });
   } catch (err) {
-    console.log("ami here");
+    console.log("ami here", err);
     next(err);
     /* if (err instanceof ZodError) {
       res.json({ status: "failed", data: err.format() });
