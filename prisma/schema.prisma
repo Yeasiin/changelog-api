@@ -16,9 +16,11 @@ enum ROLE {
 }
 
 model User {
-  id    String  @id @default(uuid())
-  email String  @unique
-  name  String?
+  id        String  @id @default(uuid())
+  email     String  @unique
+  firstName String?
+  lastName  String?
+  password  String
 
   updatedAt DateTime  @updatedAt
   createdAt DateTime  @default(now())
@@ -28,19 +30,22 @@ model User {
 }
 
 model Project {
-  id         String   @id @default(uuid())
-  title      String
-  descripton String
-  user       User     @relation(fields: [userId], references: [id])
-  userId     String
-  update     Update[]
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  update      Update[]
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+
+  // @@unique(fields: [userId, id],)
 }
 
 model Update {
-  id        String  @id @default(uuid())
-  title     String
-  user      User    @relation(fields: [userId], references: [id])
-  userId    String
+  id     String @id @default(uuid())
+  title  String
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
   project   Project @relation(fields: [projectId], references: [id])
   projectId String
 }

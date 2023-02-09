@@ -1,27 +1,18 @@
-import express from "express"
-import { z } from "zod"
-export const router = express.Router()
-import prisma from "./db/prisma"
+import express, { Request, Response, NextFunction, Errback } from "express";
+import userRouter from "./routes/userRouter";
+import projectRouter from "./routes/projectRouter";
+export const app = express();
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
- 
+app.use("/api/v1/users", userRouter);
+app.use("/api/v1/projects", projectRouter);
 
-router.post("/signup",(req,res)=>{
-
-   /*  const signupSchema = z.object({
-        firstName: z.string().min(2).max(50),
-        
-    }) */
-
-    const {firstName,lastName,email,password,confirmPassword } = req.body
-    res.json(req.body)
-})
-router.post("/login", (req,res)=>{
-    const {email,password} = req.body
-    res.json({
-        status:"success",
-        email:email,
-        role: "USER"
-        // token: token,
-    })
-})
+app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
+  console.log(err, "form server 💣🔴");
+  res.json({
+    status: "failed",
+    data: err["message"],
+  });
+});
