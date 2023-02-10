@@ -17,7 +17,7 @@ router.post("/", auth.protect, async (req, res, next) => {
     const title = data.title;
     const userId = (req as any).user.id;
 
-    const project = await prisma.project.findUniqueOrThrow({
+    const project = await prisma.project.findUnique({
       where: {
         project: {
           id: projectId,
@@ -25,6 +25,11 @@ router.post("/", auth.protect, async (req, res, next) => {
         },
       },
     });
+
+    if (!project)
+      throw new Error(
+        "But This is not your Product to add update by your self"
+      );
 
     const update = await prisma.update.create({
       data: {
@@ -43,24 +48,44 @@ router.post("/", auth.protect, async (req, res, next) => {
   }
 });
 
-router.delete("/:updateId", auth.protect, async (req, res, next) => {
+router.patch("/:updateId", auth.protect, async (req, res, next) => {
   try {
-    const projectId = req.body.updateId;
     const updateId = req.params.updateId;
-
     const userId = (req as any).user.id;
+    const title = req.body.title;
 
-    const update = await prisma.update.delete({
+    console.log(updateId, userId, title);
+
+    const data = await prisma.update.update({
       where: {
         update: {
-          id: updateId,
-          projectId: projectId,
           userId: userId,
+          updateId: updateId,
         },
       },
     });
 
-    res.json({ status: "confused", update });
+    res.json({ status: "success", data: data });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.delete("/:updateId", auth.protect, async (req, res, next) => {
+  try {
+    const updateId = req.params.updateId;
+    const userId = (req as any).user.id;
+    const projectId = req.body.projectId ?? "helo";
+    if (!projectId)
+      throw new Error("Sending Project Id Thorough body is required");
+
+    const data = await prisma.update.delete({
+      where: {
+        update,
+      },
+    });
+
+    res.json({ status: "confused", data });
   } catch (err) {
     next(err);
   }
