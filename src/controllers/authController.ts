@@ -15,7 +15,7 @@ export function comparePassword(password: string, hash: string) {
 }
 
 export function protect(req, _, next) {
-  const bearer = req.headers["x-authorization"];
+  const bearer = req.headers["authorization"];
   if (!bearer) throw new Error("invalid request");
   const [, token] = bearer.split(" ");
   try {

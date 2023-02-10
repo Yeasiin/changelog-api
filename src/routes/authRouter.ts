@@ -1,6 +1,6 @@
 import express from "express";
 import { z, ZodError } from "zod";
-import prisma from "./../db/prisma";
+import prisma from "../db/prisma";
 import * as auth from "../controllers/authController";
 
 const signUpSchema = z

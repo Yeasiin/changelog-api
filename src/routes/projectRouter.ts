@@ -6,8 +6,61 @@ const router = express.Router();
 
 router.get("/", async (req, res, next) => {
   try {
-    const data = await prisma.project.findMany({});
+    const data = await prisma.project.findMany({
+      include: {
+        update: true,
+      },
+    });
     res.json({ status: "success", data });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get("/:projectId", auth.protect, async (req, res, next) => {
+  try {
+    const projectId = req.params.projectId;
+    const userId = (req as any).user.id;
+
+    const project = await prisma.project.findUnique({
+      where: {
+        project: {
+          id: projectId,
+          userId: userId,
+        },
+      },
+    });
+
+    if (!project) throw new Error("no data found");
+
+    res.json({ status: "success", data: project });
+  } catch (err) {
+    next(err);
+  }
+});
+
+const projectUpdateSchema = z.object({
+  title: z.string().min(3).optional(),
+  description: z.string().min(10).optional(),
+});
+
+router.patch("/:projectId", auth.protect, async (req, res, next) => {
+  const projectId = req.params.projectId;
+  const userId = (req as any).user.id;
+
+  try {
+    const data = projectUpdateSchema.parse(req.body);
+    const project = await prisma.project.update({
+      where: {
+        project: {
+          id: projectId,
+          userId: userId,
+        },
+      },
+      data: data,
+    });
+
+    res.json({ status: "success", data: project });
   } catch (err) {
     next(err);
   }
@@ -24,9 +77,9 @@ router.post("/", auth.protect, async (req, res, next) => {
     const data = projectSchema.parse(req.body);
     const project = await prisma.project.create({
       data: {
-        userId: userId,
         title: data.title,
         description: data.description,
+        userId: userId,
       },
     });
 
@@ -43,9 +96,13 @@ router.delete("/:projectId", auth.protect, async (req, res, next) => {
 
     const data = await prisma.project.delete({
       where: {
-        userId_id: { userId: userId, id: projectId },
+        project: {
+          id: projectId,
+          userId: userId,
+        },
       },
     });
+
     res.json({ status: "success", msg: data });
   } catch (err) {
     next(err);
