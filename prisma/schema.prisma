@@ -28,6 +28,8 @@ model Project {
   userId      String
   User        User     @relation(fields: [userId], references: [id])
   updates     Update[]
+
+  @@unique([userId, id], name: "project")
 }
 
 model Update {
@@ -37,6 +39,8 @@ model Update {
 
   Project   Project? @relation(fields: [projectId], references: [id])
   projectId String?
+
+  @@unique([id, userId], name: "update")
 }
 
 enum ROLE {

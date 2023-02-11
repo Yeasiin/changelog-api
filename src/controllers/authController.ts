@@ -6,7 +6,6 @@ export function signToken(value: { id: string; email: string; role: string }) {
 }
 
 export function getHashed(password: string) {
-  console.log(password);
   return bcrypt.hash(password, 10);
 }
 
