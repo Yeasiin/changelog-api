@@ -1,5 +1,4 @@
 import express from "express";
-import prisma from "../db/prisma";
 import * as auth from "./../controllers/authController";
 import * as update from "../controllers/updateController";
 

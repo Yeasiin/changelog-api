@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { z, ZodError } from "zod";
 import prisma from "../db/prisma";
 import * as auth from "./authController";
+import { exclude } from "../db/utils";
 
 // Starting Create New User
 // Required Field to Create a New User Enforcing With Zod Validation
@@ -35,8 +36,8 @@ export async function createAccount(
         password: hashed,
       },
     });
-
-    delete user["password"];
+    // delete the password filed before sending to the client
+    exclude(user, ["password"]);
 
     const token = auth.signToken({
       id: user.id,
@@ -85,7 +86,8 @@ export async function loginUser(
       throw new Error("Email or password is not correct");
     }
 
-    delete user["password"];
+    // delete the password filed before sending to the client
+    exclude(user, ["password"]);
     const token = auth.signToken({
       id: user.id,
       email: user.email,

@@ -1,5 +1,5 @@
 import morgan from "morgan";
-import express, { Request, Response, NextFunction, Errback } from "express";
+import express, { Request, Response, NextFunction } from "express";
 import userRouter from "./routes/authRouter";
 import projectRouter from "./routes/projectRouter";
 import updateRouter from "./routes/updateRouter";
@@ -16,10 +16,10 @@ app.use("/api/v1/auth", userRouter);
 app.use("/api/v1/projects", projectRouter);
 app.use("/api/v1/updates", updateRouter);
 
-app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.log(err, "form server 💣🔴");
   res.json({
     status: "failed",
-    data: err["message"],
+    data: err.message,
   });
 });
